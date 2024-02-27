@@ -1,4 +1,4 @@
-# docker compose exec app python table-element-extractor/to-markdown.py
+# docker compose exec app python table-element-extractor/to-type.py
 # 微調整は必要（配列の箇所やanyが文字列になってしまう箇所など
 from bs4 import BeautifulSoup
 
@@ -33,6 +33,16 @@ def to_array_key(is_array, key):
     if is_array:
         return key + '[]'
     return key
+
+# 配列から、第一階層の要素のみを配列形式で取得する
+def  get_first_layer(arr):
+    result = []
+    for item in arr:
+        if isinstance(item, list):
+            result.append(item[0])
+        else:
+            result.append(item)
+    return result
 
 def array_to_dict(arr):
     if not arr:
@@ -100,9 +110,7 @@ def convert_html_to_type(html):
             else:
                 layered_row[-1].append([to_array_key(is_array, tmp_row[3])])
 
-
-    print (layered_row)
-    result = array_to_dict(layered_row)
+    result = get_first_layer(layered_row)
     return result
         
     
